@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>Show Stock Availability in Shopping Cart</name>
+    <code>stock-availability-shopping-cart</code>
+    <version>2.1.2</version>
+    <author>Denise (rei7092@gmail.com)</author>
+    <link>http://demo.j-mall.com.tw/</link>
+    <file path="catalog/controller/checkout/cart.php">
+        <operation>
+            <search>
+               <![CDATA[public function index() {]]>
+            </search>
+            <add position="after">
+            <![CDATA[
+            $this->load->language('product/product');
+            ]]>
+            </add>
+        </operation>
+        <operation>
+            <search>
+               <![CDATA[$data['text_next_choice'] = $this->language->get('text_next_choice');]]>
+            </search>
+            <add position="after">
+            <![CDATA[
+            $data['text_stock'] = $this->language->get('text_stock');
+            ]]>
+            </add>
+        </operation>
+        <operation>
+            <search>
+               <![CDATA['quantity'  => $product['quantity'],]]>
+            </search>
+            <add position="after">
+            <![CDATA[
+            'stock_available' => $product['stock_available'],
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file path="catalog/view/theme/*/template/checkout/cart.tpl">
+        <operation>
+            <search>
+               <![CDATA[</span></div></td>]]>
+            </search>
+            <add position="replace" index="1">
+            <![CDATA[
+            </span></div>
+            <?php 
+            if ($product['quantity'] > $product['stock_available']) :?>
+            <div class="text-danger"><?php echo $text_stock; ?> <?php echo $product['stock_available']; ?></div>
+            <?php endif;?>
+            </td>
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file path="system/library/cart/cart.php">
+        <operation>
+            <search>
+               <![CDATA[$product_query = $this->db->query]]>
+            </search>
+            <add position="before">
+            <![CDATA[
+            $stock_available = -1;
+            ]]>
+            </add>
+        </operation>
+        <operation>
+            <search>
+               <![CDATA[$option_data[] = array(]]>
+            </search>
+            <add position="before">
+            <![CDATA[
+            if (isset($option_value_query->row['quantity'])) $stock_available = $option_value_query->row['quantity'];
+
+            ]]>
+            </add>
+        </operation>
+        <operation>
+            <search>
+               <![CDATA[if (!$product_query->row['quantity'] || ($product_query->row['quantity']]]>
+            </search>
+            <add position="before">
+            <![CDATA[
+            if($stock_available <= 0)
+                $stock_available = $product_query->row['quantity'] ? $product_query->row['quantity'] : 0;
+
+            ]]>
+            </add>
+        </operation>
+        <operation>
+            <search>
+               <![CDATA['stock'           => $stock,]]>
+            </search>
+            <add position="after">
+            <![CDATA[
+            'stock_available' => $stock_available,
+            ]]>
+            </add>
+        </operation>
+    </file>
+</modification>
