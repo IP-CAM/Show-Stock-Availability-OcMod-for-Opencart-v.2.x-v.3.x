@@ -5,4 +5,4 @@ This is just downloaded from the [opencart marketplace](https://www.opencart.com
 
 I made a copy in this github repo for my personal convenience to keep a copy of the file in case it got unpublished
 
-All credit should go to the original author
+All credit should go to the original author: Denise (rei7092@gmail.com)
